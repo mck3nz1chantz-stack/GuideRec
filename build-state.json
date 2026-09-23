@@ -1,7 +1,7 @@
 {
   "project": "GuideRec",
   "launcher": "/Users/kenzi/ChantzMedia/ChantzMediaLauncher",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "envVars": [],
   "limitations": [
     "Dev server binds 127.0.0.1:5183 only. No LAN host.",
@@ -18,7 +18,7 @@
     "Footer is © {year} ChantzMedia. All rights reserved. plus linked Created By ChantzMedia to https://chantzmedia.com.",
     "robots noindex. This slice is a local operator tool, not a public page."
   ],
-  "grokBuildStatus": "slice-complete: GuideRec phone layout",
+  "grokBuildStatus": "slice-complete: practice levels for record, mix, and master",
   "guiPass": {
     "mode": "pass",
     "status": "cleared",

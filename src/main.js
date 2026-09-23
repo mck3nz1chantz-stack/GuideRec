@@ -595,12 +595,19 @@ function mixChoice(session) {
   );
 }
 
-function mixMoves(session) {
+function lineList(habit) {
+  return h(
+    "ul",
+    { class: "habit-lines" },
+    (habit.lines || []).map((line) => h("li", { text: line })),
+  );
+}
+
+function mixGain(habit, session) {
   const path = MIX_FOCUS.find((item) => item.id === session.mixFocus);
-  if (!path) return h("p", { class: "do-this", text: "Choose Vocal, Beat, or Both." });
   return h("div", {}, [
-    h("p", { class: "kicker", text: path.label }),
-    h("p", { class: "do-this", text: path.text }),
+    path ? h("p", { class: "do-this", text: path.text }) : h("p", { class: "do-this", text: "Choose Vocal, Beat, or Both." }),
+    lineList(habit),
   ]);
 }
 
@@ -608,12 +615,8 @@ function habitBody(habit, stack, session) {
   if (habit.kind === "scale") return scaleBody(habit, stack);
   if (habit.kind === "genre") return genreBody(habit, stack);
   if (habit.kind === "mix-choice") return mixChoice(session);
-  if (habit.kind === "mix-moves") return mixMoves(session);
-  return h(
-    "ul",
-    { class: "habit-lines" },
-    (habit.lines || []).map((line) => h("li", { text: line })),
-  );
+  if (habit.kind === "mix-gain") return mixGain(habit, session);
+  return lineList(habit);
 }
 
 function renderHabits(stack, session) {

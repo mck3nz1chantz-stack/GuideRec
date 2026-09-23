@@ -140,8 +140,14 @@ test("shared habits and scale notes stay generic", () => {
     habitsFor("create").map((habit) => habit.title),
     ["Key and scale", "Arrangement", "Genre"],
   );
-  assert.equal(habitsFor("mix").length, 2);
-  assert.equal(habitsFor("master").length, 2);
+  assert.deepEqual(
+    habitsFor("mix").map((habit) => habit.title),
+    ["Vocal, beat, or both", "Gain", "EQ", "Compress", "Saturate", "Second compressor", "Effects", "Headroom"],
+  );
+  assert.deepEqual(
+    habitsFor("master").map((habit) => habit.title),
+    ["Finish the mix", "Limiter", "If it pumps or lisps"],
+  );
   assert.equal(new Set(HABITS.map((habit) => habit.id)).size, HABITS.length);
   assert.match(habitsFor("record")[0].lines.join(" "), /few inches off the mic, slightly off-axis/);
   assert.equal(
@@ -152,10 +158,15 @@ test("shared habits and scale notes stay generic", () => {
     habitsFor("create").find((habit) => habit.id === "cre-form").lines.join(" "),
     /Intro, verse, chorus, and out/,
   );
-  assert.match(habitsFor("master").at(-1).lines.join(" "), /turn the loudness down/);
-  assert.match(MIX_FOCUS.find((item) => item.id === "both").text, /one shared delay and one shared reverb/);
+  assert.match(habitsFor("record").find((habit) => habit.id === "rec-level").lines.join(" "), /-12 to -6 dBFS/);
+  assert.match(habitsFor("record").find((habit) => habit.id === "rec-level").lines.join(" "), /-18 dBFS/);
+  assert.match(habitsFor("mix").find((habit) => habit.id === "mix-head").lines.join(" "), /around -6 dBFS/);
+  assert.match(habitsFor("mix").find((habit) => habit.id === "mix-fx").lines.join(" "), /One shared delay and one shared reverb/);
+  assert.match(habitsFor("master").find((habit) => habit.id === "mas-limit").lines.join(" "), /-14 LUFS/);
+  assert.match(habitsFor("master").at(-1).lines.join(" "), /turn the limiter down/);
+  assert.match(MIX_FOCUS.find((item) => item.id === "both").text, /shared delay and reverb/);
   assert.match(MIX_FOCUS.find((item) => item.id === "vocal").text, /Do not stack vocal suites/);
-  assert.match(MIX_FOCUS.find((item) => item.id === "beat").text, /No limiter while the faders still move/);
+  assert.match(MIX_FOCUS.find((item) => item.id === "beat").text, /drums and bass first/);
   const blob = `${JSON.stringify(HABITS)} ${JSON.stringify(MIX_FOCUS)} ${JSON.stringify(MODES)}`;
   for (const word of HABIT_BANNED) assert.equal(blob.includes(word), false, word);
   for (const name of PLUGIN_NAMES) assert.equal(blob.includes(name), false, name);

@@ -94,17 +94,17 @@ export const MIX_FOCUS = [
   {
     id: "vocal",
     label: "Vocal",
-    text: "Clean noise, breaths, and mud before tone. Set the level before effects. Do not stack vocal suites.",
+    text: "Clean noise, breaths, and mud before tone. Set the vocal level against the beat. Do not stack vocal suites.",
   },
   {
     id: "beat",
     label: "Beat",
-    text: "Balance drums and bass first, then the rest of the music. No limiter while the faders still move.",
+    text: "Balance drums and bass first, then the rest of the music.",
   },
   {
     id: "both",
     label: "Both",
-    text: "Beat balance first, then vocal level against that beat, then one shared delay and one shared reverb. Do not master yet.",
+    text: "Beat balance first, then the vocal level against that beat, then the shared delay and reverb.",
   },
 ];
 
@@ -123,8 +123,11 @@ export const HABITS = [
     order: 2,
     title: "Level",
     lines: [
-      "Set the gain so the take has headroom and does not clip.",
+      "Peaks about -12 to -6 dBFS. Do not hit 0 dBFS.",
+      "If the meter clips, turn the preamp down and do the take again.",
+      "Average energy can sit nearer -18 dBFS. Leave that headroom for the mix.",
       "Start quiet, then turn up.",
+      "Set the level before you reach for a compressor on the way in.",
     ],
   },
   {
@@ -147,7 +150,11 @@ export const HABITS = [
     mode: "create",
     order: 2,
     title: "Arrangement",
-    lines: ["Intro, verse, chorus, and out.", "Do not write the song here. Do not arrange with plugins."],
+    lines: [
+      "Intro, verse, chorus, and out.",
+      "Record the idea dry. Leave the mix moves for Mix.",
+      "Do not write the song here. Do not arrange with plugins.",
+    ],
   },
   {
     id: "cre-genre",
@@ -165,11 +172,83 @@ export const HABITS = [
     kind: "mix-choice",
   },
   {
-    id: "mix-first",
+    id: "mix-gain",
     mode: "mix",
     order: 2,
-    title: "First moves",
-    kind: "mix-moves",
+    title: "Gain",
+    kind: "mix-gain",
+    lines: [
+      "Set clip or channel gain so the fader can sit near unity.",
+      "If you need the fader at the bottom to make it quiet, the clip is too hot.",
+    ],
+  },
+  {
+    id: "mix-eq",
+    mode: "mix",
+    order: 3,
+    title: "EQ",
+    lines: [
+      "Cut before you boost.",
+      "Mud often sits around 200–400 Hz. Harshness often sits around 2–5 kHz.",
+      "High-pass what does not need sub energy.",
+      "Do not EQ every channel by habit.",
+    ],
+  },
+  {
+    id: "mix-comp",
+    mode: "mix",
+    order: 4,
+    title: "Compress",
+    lines: [
+      "Start near 2–4 dB of gain reduction.",
+      "Slow attack lets the hit through. Fast attack dulls it.",
+      "Makeup gain brings back the level you just removed.",
+      "If you cannot hear the change with the compressor in and out, it is not working.",
+    ],
+  },
+  {
+    id: "mix-sat",
+    mode: "mix",
+    order: 5,
+    title: "Saturate",
+    lines: [
+      "Saturate only if the sound is thin or dull after the compressor. A little.",
+      "If it gets smaller or fizzy, back off.",
+    ],
+  },
+  {
+    id: "mix-comp-2",
+    mode: "mix",
+    order: 6,
+    title: "Second compressor",
+    lines: [
+      "Add a second compressor only when the first one is doing one job and you still need another.",
+      "One evens the performance. One catches peaks.",
+      "Skip it when 2–4 dB was enough.",
+    ],
+  },
+  {
+    id: "mix-fx",
+    mode: "mix",
+    order: 7,
+    title: "Effects",
+    lines: [
+      "Put delay and reverb on a send. Do not print them on the dry track.",
+      "One shared delay and one shared reverb.",
+      "Set the send until you hear it, then lower it.",
+    ],
+  },
+  {
+    id: "mix-head",
+    mode: "mix",
+    order: 8,
+    title: "Headroom",
+    lines: [
+      "Balance first.",
+      "Mix-bus peaks around -6 dBFS, with a few dB still free.",
+      "No limiter on the mix bus while the faders are still moving.",
+      "Do not master inside the mix.",
+    ],
   },
   {
     id: "mas-finish",
@@ -177,18 +256,30 @@ export const HABITS = [
     order: 1,
     title: "Finish the mix",
     lines: [
-      "Finish the mix. Bounce with headphone correction off. Leave headroom.",
-      "Master after the mix, not inside it.",
+      "The mix is finished before you bounce.",
+      "Headphone correction off.",
+      "The bounce still has the headroom from the mix, about -6 dBFS peaks.",
+    ],
+  },
+  {
+    id: "mas-limit",
+    mode: "master",
+    order: 2,
+    title: "Limiter",
+    lines: [
+      "One limiter at the end.",
+      "Integrated loudness near -14 LUFS is a common streaming region, not a target to hit by crushing the song.",
+      "True peak under -1 dBTP.",
     ],
   },
   {
     id: "mas-loud",
     mode: "master",
-    order: 2,
+    order: 3,
     title: "If it pumps or lisps",
     lines: [
-      "If the low end pumps or the vocal lisps, turn the loudness down.",
-      "Do not chase it with another de-esser on the master.",
+      "If the low end pumps or the vocal lisps, turn the limiter down.",
+      "Do not fix that with another de-esser on the master.",
     ],
   },
 ];
