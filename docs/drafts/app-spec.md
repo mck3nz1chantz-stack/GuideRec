@@ -10,7 +10,7 @@ A local Best Habits walkthrough for one recording setup at a time. The guide is 
 
 ## Acceptance
 
-- User-facing name is GuideRec in the document title, the header, `Open StackRig.command`, and this project’s README. The folder stays `StackRig`.
+- User-facing name is GuideRec in the document title, the header, `Open GuideRec.command`, and this project’s README. The folder on disk stays `StackRig`.
 - Vite serves `127.0.0.1:5183` only.
 - The first view is the host and the setups. Seeded hosts are Logic Pro and Bandlab. A new host is a name the operator types. There is no DAW catalog.
 - New or Existing comes next. Existing opens a saved setup on Best Habits. New asks for a setup name, then optional plugin names one at a time, then Next opens Best Habits.

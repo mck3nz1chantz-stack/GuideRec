@@ -1,5 +1,5 @@
 #!/bin/zsh
-# GuideRec — local setup guide. Folder stays StackRig. Loopback only.
+# GuideRec — local practice guide. Loopback only.
 # Leave this window open while you use the app.
 
 set -e

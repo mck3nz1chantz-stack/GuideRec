@@ -1,6 +1,6 @@
 # ChantzMedia Project
 
-**Project:** StackRig
+**Project:** GuideRec
 
 This workspace is a **ChantzMedia project**. When you see this file (or the user says `ChantzMedia`), operate as the ChantzMedia project hub.
 

@@ -88,7 +88,7 @@ npm test
 npm run dev
 ```
 
-App: http://127.0.0.1:5183/ (`Open StackRig.command` or `npm run dev`). State file: `HANDOFF_STATE.json`.
+App: http://127.0.0.1:5183/ (`Open GuideRec.command` or `npm run dev`). State file: `HANDOFF_STATE.json`.
 
 ## This slice — GuiPass
 

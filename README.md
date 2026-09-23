@@ -1,26 +1,30 @@
 # GuideRec
 
-Local Best Habits walkthrough for one setup at a time. The same generic guide for every host. Plugins you type stay inventory.
+GuideRec is a local practice guide for recording. You pick the setup you are using, then walk through Record, Create, Mix, and Master one step at a time. The steps are the same for every setup. They are habits, not a mix recipe and not a plugin manual.
 
-The folder is still `StackRig`.
+## What you do
 
-Code lives here: `~/ChantzMedia/ChantzMediaProjects/StackRig`  
-Launcher used: **1.4.2** at `~/ChantzMedia/ChantzMediaLauncher` (`VERSION.txt`). Not the Desktop copy.  
-Open: `Open StackRig.command` or `npm run dev`  
-App: http://127.0.0.1:5183/
+1. Choose the host. The shipped choices are Logic Pro and Bandlab. You can type another host name.
+2. Open a saved setup, or make a new one. A new setup needs a name. Plugin names are optional.
+3. Follow Best Habits.
+   - **Record** covers mic distance, gain with headroom, and a dry take.
+   - **Create** shows the notes in the key and scale you pick. The piano is two octaves, C to C. Marks move when you change key or scale. The keys do not play.
+   - **Mix** asks whether you are working on the vocal, the beat, or both, then shows the first moves for that choice.
+   - **Master** is about finishing the mix before you chase loudness.
+4. Gear is only a list of what that setup owns. Adding or removing a plugin does not change the guide.
+5. Export downloads that setup, or every setup, as a JSON file you keep next to the session. Import puts a file back on this Mac.
 
-Shipped setups: **Home**, **Home 2**, and **Mobile (Bandlab)**. Home keeps the MKZ Logic Home gear (`stk-mkz-logic-home`). Mobile starts with empty gear.
+Three setups ship with the app: **Home**, **Home 2**, and **Mobile (Bandlab)**. Home keeps one Logic inventory. Home 2 is a second copy of that list. Mobile starts with no plugins.
 
-Data stays in this browser (`localStorage` key `chantzmedia.guiderec.v1`) plus JSON you export. If that key is empty and `chantzmedia.stackrig.v1` is present, it is copied forward once. No account, no cloud, no plugin scan. The dev server binds loopback only.
+## On this Mac
 
-## Launcher (read-only)
+The app runs only on this computer, at http://127.0.0.1:5183/. There is no account and no cloud. What you change is saved in this browser.
 
-Source of truth: `/Users/kenzi/ChantzMedia/ChantzMediaLauncher`
+Open it with `Open GuideRec.command`, or from the project folder:
 
-Do not modify the launcher unless you say: `I give permission to modify ChantzMediaLauncher`
+```bash
+npm install
+npm run dev
+```
 
-This slice does not enroll a product family, router, or activation phrase.
-
-## Build state
-
-GrokBuild writes handoff notes in `build-state.json`.
+The project folder on disk is still `ChantzMediaProjects/StackRig`. Exported files use the id `StackRig.v1` so an older save still opens. The browser key is `chantzmedia.guiderec.v1`.

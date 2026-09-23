@@ -1,6 +1,6 @@
 # GrokLaw Registry
 
-**Project:** StackRig
+**Project:** GuideRec
 
 | Date | ID / slug | Type | Subject | Verdict | File |
 |------|-----------|------|---------|---------|------|
