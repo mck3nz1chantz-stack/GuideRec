@@ -1,0 +1,75 @@
+{
+  "projectName": "GuideRec",
+  "folderName": "StackRig",
+  "workspacePath": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+  "launcherPath": "/Users/kenzi/ChantzMedia/ChantzMediaLauncher",
+  "launcherVersion": "1.4.2",
+  "launcherVersionFile": "VERSION.txt",
+  "deployPosture": "Local only. Loopback http://127.0.0.1:5183. No preview or production deploy. No AppHub, MODULE_ROUTER, or ACTIVATION_PROMPTS enrollment unless the operator asks.",
+  "currentSlice": "Phone layout (shipped)",
+  "nextSlice": "Operator picks the next slice",
+  "lastUpdated": "2026-09-23T13:46:28Z",
+  "gitBranch": "none — project is not a git repo",
+  "lockedDecisions": "Folder stays StackRig. Product name stays GuideRec. Local only at 127.0.0.1:5183. No launcher edits, no AppHub, no new desk. Best Habits is one shared walkthrough for every setup. The operator rejected per-setup checklists and the Newbie/Advanced split. Plugin names stay inventory. They do not drive the guide. Do not invent plugins, mics, or a Bandlab chain.",
+  "techStack": "Vite 7 + vanilla JS. No React. Package 0.3.0. Data in localStorage `chantzmedia.guiderec.v1` (one-time copy from `chantzmedia.stackrig.v1`). JSON import/export schema id StackRig.v1. Key, scale, and genre live on the setup. Mix focus lives on the session. Bind 127.0.0.1:5183 strictPort. Files: `src/seed.js`, `src/store.js`, `src/main.js`, `src/styles.css`.",
+  "slices": [
+    {
+      "id": "v0.1",
+      "name": "StackRig local rig checklist",
+      "status": "done",
+      "notes": "Seed MKZ Logic Home, four modes, checks persist, rig editor, JSON import/export. npm test 8 pass. chantz verify pass on npm run build."
+    },
+    {
+      "id": "focus",
+      "name": "GuideRec focus pass",
+      "status": "done",
+      "notes": "GuideRec name, plain step titles, Home / Home 2 / Mobile (Bandlab), newbie and advanced on the same steps. npm test 14 pass. Browser-checked desktop and 390. Operator then asked to drop per-setup checklists."
+    },
+    {
+      "id": "habits",
+      "name": "Best Habits walkthrough",
+      "status": "done",
+      "notes": "Shared Record, Create, Mix, and Master screens. Key and scale note layout. Mix focus Vocal, Beat, or Both. npm test 14 pass. Browser-checked at 1280 and 390."
+    },
+    {
+      "id": "keyboard",
+      "name": "Create keyboard overlay",
+      "status": "done",
+      "notes": "Two octaves, C to C, one image. Marks from scaleNotes(). C stays on the left. No sound, no MIDI. Browser-checked at 1280 and 390. npm test 15 pass. chantz verify pass."
+    },
+    {
+      "id": "guipass",
+      "name": "GuiPass on the GuideRec product UI",
+      "status": "done",
+      "notes": "GUI-CLEARED. Skip link raised to 44px. Browser-checked at 1280 and 390. npm test 15 pass. chantz verify pass. Report docs/drafts/gui-report.md."
+    }
+  ],
+  "criticalNotes": [
+    "Live launcher is 1.4.2 at ~/ChantzMedia/ChantzMediaLauncher. Read VERSION.txt. Do not use ~/Desktop/ChantzMediaLauncher.",
+    "Do not modify the launcher. Do not enroll a product family. Do not run MediaLaunch or SiteScaffold.",
+    "Best Habits is generic music practice. Do not branch the guide on which plugins a setup owns.",
+    "Home still stores the operator's real Logic gear in seed data. Keep that inventory. Do not turn those names into required steps.",
+    "Mobile (Bandlab) stays an empty-gear setup with host Bandlab. Do not copy the Logic plugin list into it.",
+    "Storage key is chantzmedia.guiderec.v1. Keep it. Do not add a third key.",
+    "Stored mode id for the creative process stays create. Screen word is Create.",
+    "Create key and scale already persist on the setup. scaleNotes() in src/seed.js is the spelling source. C Major is C D E F G A B. A Minor pentatonic is A C D E G. Spell with C C# D D# E F F# G G# A A# B only.",
+    "Create shows one piano image, two octaves from C to C. The selected key and scale move the marks. The note line still spells from the root. Still no MIDI and no sound. The keys are not buttons.",
+    "GuiPass target is this app at http://127.0.0.1:5183/. Skip launcher-only checks: registry drift, Map versus Console, and desk openers. Do not restyle GuideRec onto launcher chrome tokens."
+  ],
+  "openIssues": [
+    "GuiPass signed GUI-CLEARED. The skip link was 41px and is now 44px. No open product GUI defects."
+  ],
+  "keyPaths": [
+    "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+    "src/seed.js",
+    "src/store.js",
+    "src/main.js",
+    "src/styles.css",
+    "docs/drafts/app-spec.md",
+    "build-state.json",
+    "/Users/kenzi/ChantzMedia/ChantzMediaLauncher/VERSION.txt",
+    "/Users/kenzi/ChantzMedia/ChantzMediaLauncher/GrokBuild/GROKBUILD_CORE.md",
+    "/Users/kenzi/ChantzMedia/ChantzMediaLauncher/docs/final/ops/STUDIO_SCRATCH.md",
+    "/Users/kenzi/ChantzMedia/ChantzMediaLauncher/skills/gui-desk/SKILL.md"
+  ]
+}
