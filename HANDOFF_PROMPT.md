@@ -58,7 +58,7 @@ This project is not a git repo. Do not run `git init`. There is no branch and no
 - Create key and scale already persist on the setup. scaleNotes() in src/seed.js is the spelling source. C Major is C D E F G A B. A Minor pentatonic is A C D E G. Spell with C C# D D# E F F# G G# A A# B only.
 - Create shows one piano image, two octaves from C to C. The selected key and scale move the marks. The note line still spells from the root. Still no MIDI and no sound. The keys are not buttons.
 - GuiPass target is this app at http://127.0.0.1:5183/. Skip launcher-only checks: registry drift, Map versus Console, and desk openers. Do not restyle GuideRec onto launcher chrome tokens.
-- Two-click delete is intentional. Mix Next stays disabled until Vocal, Beat, or Both is chosen. "Saved on this Mac." must not show when the browser blocked storage.
+- Two-click delete is intentional. Mix Next stays disabled until Vocal, Beat, or Both is chosen. "Saved on this device." must not show when the browser blocked storage.
 
 ## Open issues / blockers
 

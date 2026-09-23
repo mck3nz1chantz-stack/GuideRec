@@ -18,7 +18,7 @@ Three setups ship with the app: **Home**, **Home 2**, and **Mobile (Bandlab)**. 
 
 ## On this Mac
 
-The app runs only on this computer, at http://127.0.0.1:5183/. There is no account and no cloud. What you change is saved in this browser.
+On this Mac, local development stays at http://127.0.0.1:5183/. The phone link is https://guiderec.pages.dev/. There is no account. What you change is saved in that browser, on that device.
 
 Open it with `Open GuideRec.command`, or from the project folder:
 

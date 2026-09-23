@@ -90,7 +90,7 @@ function remember(next) {
 function statusText() {
   if (storageError) return "Browser blocked storage. Export a copy before you close this tab.";
   if (flash) return flash;
-  return "Saved on this Mac.";
+  return "Saved on this device.";
 }
 
 function cursorKey(sessionId, mode) {
