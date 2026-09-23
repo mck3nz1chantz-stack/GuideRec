@@ -6,7 +6,7 @@
   "limitations": [
     "Dev server binds 127.0.0.1:5183 only. No LAN host.",
     "Setup and session data live in localStorage key chantzmedia.guiderec.v1, plus JSON import/export. If that key is empty, chantzmedia.stackrig.v1 is copied forward once. No accounts or cloud.",
-    "Best Habits is one shared walkthrough for every setup. Key, scale, and genre live on the setup. Mix focus lives on the session. File schema id stays StackRig.v1.",
+    "Best Habits is one shared walkthrough for every setup. Key, scale, and genre live on the setup. Mix focus lives on the session. New files use schema id GuideRec.v1. An older StackRig.v1 export still opens.",
     "Create shows one piano image, two octaves from C to C. Marks come from scaleNotes(). The keys do not play. No MIDI and no sound.",
     "Home keeps the operator plugin list. Home 2 is that list duplicated. Mobile (Bandlab) ships with empty gear and the host Bandlab. Plugin names are inventory, not guide steps.",
     "Not enrolled in AppHub, MODULE_ROUTER, or ACTIVATION_PROMPTS."
@@ -103,7 +103,7 @@
     "seo": "pending",
     "aieo": "pending",
     "notes": [
-      "Local operator tool, not a public page. robots noindex. Footer credit is in the UI. Product name GuideRec. Folder remains StackRig. Best Habits is the shared walkthrough. Create piano is a local image, two octaves from C to C."
+      "Local operator tool, not a public page. robots noindex. Footer credit is in the UI. Product name and folder are GuideRec. Best Habits is the shared walkthrough. Create piano is a local image, two octaves from C to C."
     ],
     "updatedAt": "2026-09-23T02:00:00Z"
   },
@@ -117,7 +117,7 @@
       "commands": [
         {
           "cmd": "npm run build",
-          "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+          "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec",
           "exitCode": 0,
           "ok": true,
           "durationMs": 383,
@@ -131,13 +131,13 @@
     "history": [
       {
         "sliceId": null,
-        "goal": "StackRig v0.1 local rig checklist with seeded MKZ Logic Home stack",
+        "goal": "GuideRec v0.1 local checklist with seeded MKZ Logic Home stack",
         "at": "2026-09-23T01:11:34.357Z",
         "result": "pass",
         "commands": [
           {
             "cmd": "npm run build",
-            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec",
             "exitCode": 0,
             "ok": true,
             "durationMs": 425,
@@ -158,7 +158,7 @@
         "commands": [
           {
             "cmd": "npm run build",
-            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec",
             "exitCode": 0,
             "ok": true,
             "durationMs": 379,
@@ -177,7 +177,7 @@
         "commands": [
           {
             "cmd": "npm run build",
-            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec",
             "exitCode": 0,
             "ok": true,
             "durationMs": 543,
@@ -196,7 +196,7 @@
         "commands": [
           {
             "cmd": "npm run build",
-            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec",
             "exitCode": 0,
             "ok": true,
             "durationMs": 340,
@@ -215,7 +215,7 @@
         "commands": [
           {
             "cmd": "npm run build",
-            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig",
+            "cwd": "/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec",
             "exitCode": 0,
             "ok": true,
             "durationMs": 373,

@@ -27,4 +27,4 @@ npm install
 npm run dev
 ```
 
-The project folder on disk is still `ChantzMediaProjects/StackRig`. Exported files use the id `StackRig.v1` so an older save still opens. The browser key is `chantzmedia.guiderec.v1`.
+The app lives in `ChantzMediaProjects/GuideRec`. New exports use the id `GuideRec.v1`. An export saved under the earlier name still opens. The browser key is `chantzmedia.guiderec.v1`.

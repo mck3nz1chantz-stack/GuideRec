@@ -4,7 +4,7 @@
 
 set -e
 PORT=5183
-ROOT="/Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig"
+ROOT="/Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec"
 
 cd "$ROOT" || {
   echo "ERROR: App folder not found: $ROOT"

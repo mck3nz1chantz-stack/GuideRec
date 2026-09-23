@@ -244,6 +244,10 @@ test("import merges a rig and rejects other files", () => {
   let state = createStack(seedState(), "Client vocal session");
   const otherId = state.activeStackId;
   const renamed = structuredClone(exportRig(seedState(), () => "2026-09-22T00:00:00.000Z"));
+  assert.equal(renamed.schema, "GuideRec.v1");
+  const older = structuredClone(renamed);
+  older.schema = "StackRig.v1";
+  assert.equal(parseRig(JSON.stringify(older)).kind, "rig");
   renamed.stack.name = "MKZ Logic Home renamed";
   renamed.stack.plugins.push({
     id: "pl-trap",

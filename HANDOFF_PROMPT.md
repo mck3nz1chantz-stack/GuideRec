@@ -21,19 +21,19 @@ No deploy. The project is not a git repo. Do not run `git init`.
 
 ## Locked decisions (do not re-do Phase 1/2 unless user explicitly reopens)
 
-Folder stays StackRig. Product name stays GuideRec. Local only at 127.0.0.1:5183. No launcher edits, no AppHub, no new desk. Best Habits is one shared walkthrough for every setup. The operator rejected per-setup checklists and the Newbie/Advanced split. Plugin names stay inventory. They do not drive the guide. Do not invent plugins, mics, or a Bandlab chain.
+Folder is GuideRec. Product name stays GuideRec. Local only at 127.0.0.1:5183. No launcher edits, no AppHub, no new desk. Best Habits is one shared walkthrough for every setup. The operator rejected per-setup checklists and the Newbie/Advanced split. Plugin names stay inventory. They do not drive the guide. Do not invent plugins, mics, or a Bandlab chain.
 
 The Create piano is one image, two octaves, C to C. C stays on the left. Changing Key or Scale moves the marks. The note line still spells from the root. C Major is C D E F G A B. A Minor pentatonic is A C D E G. The keys do not play. No MIDI and no sound.
 
 ## Tech stack
 
-Vite 7 + vanilla JS. No React. Package 0.3.0. Data in localStorage `chantzmedia.guiderec.v1` (one-time copy from `chantzmedia.stackrig.v1`). JSON import/export schema id StackRig.v1. Key, scale, and genre live on the setup. Mix focus lives on the session. Bind 127.0.0.1:5183 strictPort. Files: `src/seed.js`, `src/store.js`, `src/main.js`, `src/styles.css`. Piano image: `public/keyboard-octave.png`.
+Vite 7 + vanilla JS. No React. Package 0.3.0. Data in localStorage `chantzmedia.guiderec.v1` (one-time copy from `chantzmedia.stackrig.v1`). JSON import/export schema id GuideRec.v1. An older StackRig.v1 file still opens. Key, scale, and genre live on the setup. Mix focus lives on the session. Bind 127.0.0.1:5183 strictPort. Files: `src/seed.js`, `src/store.js`, `src/main.js`, `src/styles.css`. Piano image: `public/keyboard-octave.png`.
 
 ## Progress
 
 | Slice | Name | Status | Notes |
 |-------|------|--------|-------|
-| v0.1 | StackRig local rig checklist | done | Seed MKZ Logic Home, four modes, checks persist, rig editor, JSON import/export. npm test 8 pass. chantz verify pass on npm run build. |
+| v0.1 | GuideRec local checklist | done | Seed MKZ Logic Home, four modes, checks persist, rig editor, JSON import/export. npm test 8 pass. chantz verify pass on npm run build. |
 | focus | GuideRec focus pass | done | GuideRec name, plain step titles, Home / Home 2 / Mobile (Bandlab), newbie and advanced on the same steps. npm test 14 pass. Browser-checked desktop and 390. Operator then asked to drop per-setup checklists. |
 | habits | Best Habits walkthrough | done | Shared Record, Create, Mix, and Master screens. Key and scale note layout. Mix focus Vocal, Beat, or Both. npm test 14 pass. Browser-checked at 1280 and 390. |
 | keyboard | Create keyboard overlay | done | Two octaves, C to C, one image. Marks from scaleNotes(). C stays on the left. No sound, no MIDI. Browser-checked at 1280 and 390. npm test 15 pass. chantz verify pass. |
@@ -66,7 +66,7 @@ This project is not a git repo. Do not run `git init`. There is no branch and no
 
 ## Key paths
 
-- /Users/kenzi/ChantzMedia/ChantzMediaProjects/StackRig
+- /Users/kenzi/ChantzMedia/ChantzMediaProjects/GuideRec
 - src/seed.js
 - src/store.js
 - src/main.js
@@ -83,7 +83,7 @@ This project is not a git repo. Do not run `git init`. There is no branch and no
 ## Local dev
 
 ```bash
-cd ~/ChantzMedia/ChantzMediaProjects/StackRig
+cd ~/ChantzMedia/ChantzMediaProjects/GuideRec
 npm test
 npm run dev
 ```

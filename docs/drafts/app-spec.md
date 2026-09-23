@@ -1,7 +1,7 @@
 # AppSpec — GuideRec
 
-**Path:** studio-scratch · AppHub family studio · **Project:** `~/ChantzMedia/ChantzMediaProjects/StackRig`  
-**Folder:** `StackRig` · **Product name:** GuideRec  
+**Path:** studio-scratch · AppHub family studio · **Project:** `~/ChantzMedia/ChantzMediaProjects/GuideRec`  
+**Folder:** `GuideRec` · **Product name:** GuideRec  
 **Not:** client MediaLaunch · SiteScaffold · PlantForge · StallStart · a new launcher desk
 
 ## Goal
@@ -10,7 +10,7 @@ A local Best Habits walkthrough for one recording setup at a time. The guide is 
 
 ## Acceptance
 
-- User-facing name is GuideRec in the document title, the header, `Open GuideRec.command`, and this project’s README. The folder on disk stays `StackRig`.
+- User-facing name is GuideRec in the document title, the header, `Open GuideRec.command`, and this project’s README. The folder on disk is `GuideRec`.
 - Vite serves `127.0.0.1:5183` only.
 - The first view is the host and the setups. Seeded hosts are Logic Pro and Bandlab. A new host is a name the operator types. There is no DAW catalog.
 - New or Existing comes next. Existing opens a saved setup on Best Habits. New asks for a setup name, then optional plugin names one at a time, then Next opens Best Habits.
@@ -26,7 +26,7 @@ A local Best Habits walkthrough for one recording setup at a time. The guide is 
 - Gear is a quiet inventory screen, not the guide. Changing screens does not delete a plugin.
 - Phone and desktop. No horizontal scroll. Tap targets at least 44px. Buttons and fields have visible labels and a focus ring. Habit text does not cover the footer.
 - Footer: `© {year} ChantzMedia. All rights reserved.` then linked `Created By ChantzMedia` → https://chantzmedia.com
-- Storage key is `chantzmedia.guiderec.v1`. If it is empty and `chantzmedia.stackrig.v1` exists, copy that data forward once. File schema id stays `StackRig.v1`.
+- Storage key is `chantzmedia.guiderec.v1`. If it is empty and an older browser save exists, copy that data forward once. New files use schema id `GuideRec.v1`. An older `StackRig.v1` export still opens.
 - `npm test` and `npm run build` exit 0.
 
 ## Invariants
@@ -37,7 +37,7 @@ A local Best Habits walkthrough for one recording setup at a time. The guide is 
 - No accounts, cloud, DAW control, plugin scanning, marketplace, or AI mix advice.
 - App code stays under this project. Do not enroll MODULE_ROUTER, ACTIVATION_PROMPTS, or a new desk in this slice.
 - User-entered and imported strings render as text.
-- File schema id stays `StackRig.v1` so a v0.1 export still opens.
+- New files use schema id `GuideRec.v1`. An older `StackRig.v1` export still opens.
 
 ## Security
 

@@ -1,8 +1,9 @@
 import { GROUPS, KEYS, MODE_IDS, SCALES, cloneSetup, mobileSetup, seedStack } from "./seed.js";
 
-export const SCHEMA = "StackRig.v1";
+export const SCHEMA = "GuideRec.v1";
 export const STORAGE_KEY = "chantzmedia.guiderec.v1";
 export const LEGACY_KEY = "chantzmedia.stackrig.v1";
+const ACCEPTED_SCHEMAS = new Set([SCHEMA, "StackRig.v1"]);
 const VIEWS = ["home", "board", "rig", "file"];
 
 export function uid(prefix) {
@@ -263,7 +264,7 @@ function readStored(storage, key) {
   if (raw == null || String(raw).trim() === "") return { status: "empty" };
   try {
     const parsed = JSON.parse(raw);
-    if (parsed?.schema === SCHEMA && Array.isArray(parsed.stacks)) return { status: "ok", parsed };
+    if (ACCEPTED_SCHEMAS.has(parsed?.schema) && Array.isArray(parsed.stacks)) return { status: "ok", parsed };
     return { status: "invalid" };
   } catch {
     return { status: "invalid" };
@@ -709,7 +710,7 @@ export function parseRig(text) {
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     return { error: "JSON must be an object." };
   }
-  if (data.schema !== SCHEMA) return { error: "Unknown file. Expected a GuideRec export." };
+  if (!ACCEPTED_SCHEMAS.has(data.schema)) return { error: "Unknown file. Expected a GuideRec export." };
   if (data.kind === "library" || Array.isArray(data.stacks)) {
     const stacks = (Array.isArray(data.stacks) ? data.stacks : []).map(normalizeStack).filter(Boolean);
     if (!stacks.length) return { error: "Library file has no setups." };
