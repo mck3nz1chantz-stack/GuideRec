@@ -174,6 +174,12 @@ export function normalizeStack(input) {
   };
 }
 
+function mixStep(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) return 0;
+  return Math.min(Math.floor(number), 20);
+}
+
 function normalizeSession(input, known) {
   if (!input || typeof input !== "object") return null;
   const name = cleanName(input.name, 120);
@@ -193,6 +199,14 @@ function normalizeSession(input, known) {
     mode: MODE_IDS.includes(input.mode) ? input.mode : "record",
     depth: input.depth === "advanced" ? "advanced" : "newbie",
     mixFocus: input.mixFocus === "vocal" || input.mixFocus === "beat" || input.mixFocus === "both" ? input.mixFocus : "",
+    mixDone: {
+      beat: input.mixDone?.beat === true,
+      vocal: input.mixDone?.vocal === true,
+    },
+    mixAt: {
+      beat: mixStep(input.mixAt?.beat),
+      vocal: mixStep(input.mixAt?.vocal),
+    },
     checkedStepIds: checked,
     notes: cleanText(input.notes || "", 4000),
   };
@@ -235,6 +249,8 @@ function freshSession(stackId, id) {
     mode: "record",
     depth: "newbie",
     mixFocus: "",
+    mixDone: { beat: false, vocal: false },
+    mixAt: { beat: 0, vocal: 0 },
     checkedStepIds: [],
     notes: "",
   };
@@ -486,8 +502,33 @@ export function setGenre(state, genre) {
 }
 
 export function setMixFocus(state, focus) {
-  if (focus !== "vocal" && focus !== "beat" && focus !== "both") return state;
+  if (focus !== "vocal" && focus !== "beat" && focus !== "both" && focus !== "") return state;
   return mapSession(state, (session) => ({ ...session, mixFocus: focus }));
+}
+
+export function setMixAt(state, part, count) {
+  if (part !== "beat" && part !== "vocal") return state;
+  const next = mixStep(count);
+  return mapSession(state, (session) => ({
+    ...session,
+    mixAt: {
+      beat: mixStep(session.mixAt?.beat),
+      vocal: mixStep(session.mixAt?.vocal),
+      [part]: Math.max(mixStep(session.mixAt?.[part]), next),
+    },
+  }));
+}
+
+export function setMixDone(state, part, done) {
+  if (part !== "beat" && part !== "vocal") return state;
+  return mapSession(state, (session) => ({
+    ...session,
+    mixDone: {
+      beat: session.mixDone?.beat === true,
+      vocal: session.mixDone?.vocal === true,
+      [part]: Boolean(done),
+    },
+  }));
 }
 
 export function setDepth(state, depth) {

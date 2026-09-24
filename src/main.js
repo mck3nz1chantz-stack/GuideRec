@@ -7,6 +7,9 @@ import {
   MODES,
   SCALES,
   SEEDED_HOSTS,
+  GENRE_GUIDES,
+  SHARED_LEVELS,
+  guideForGenre,
   habitsFor,
   keyboardLayout,
   scaleNotes,
@@ -33,6 +36,8 @@ import {
   setGenre,
   setHost,
   setKeyScale,
+  setMixAt,
+  setMixDone,
   setMixFocus,
   setMode,
   setView,
@@ -52,6 +57,7 @@ let state = loadState();
 let flash = "";
 let storageError = false;
 let focusAfter = "";
+let mixCard = "beat";
 let hostName = "Logic Pro";
 let hostDraft = "";
 let gate = "";
@@ -93,28 +99,104 @@ function statusText() {
   return "Saved on this device.";
 }
 
-function cursorKey(sessionId, mode) {
+function cursorKey(sessionId, mode, focus) {
+  if (mode === "mix" && (focus === "beat" || focus === "vocal")) return `${sessionId}:mix:${focus}`;
   return `${sessionId}:${mode}`;
+}
+
+function mixRun(session) {
+  return session.mixFocus === "beat" || session.mixFocus === "vocal" ? session.mixFocus : "";
+}
+
+function mixChecklist() {
+  return habitsFor("mix").filter((habit) => habit.kind !== "mix-choice");
+}
+
+function stepsReached(session, part) {
+  const total = mixChecklist().length;
+  if (session.mixDone?.[part]) return total;
+  return Math.min(mixStepCount(session.mixAt?.[part]), total);
+}
+
+function mixStepCount(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) return 0;
+  return Math.floor(number);
 }
 
 function habitIndex(session, habits) {
   if (!habits.length) return 0;
-  const key = cursorKey(session.id, session.mode);
-  const current = cursor.has(key) ? cursor.get(key) : 0;
+  const key = cursorKey(session.id, session.mode, session.mixFocus);
+  const saved = mixRun(session) ? Math.max(0, stepsReached(session, mixRun(session)) - 1) : 0;
+  const current = cursor.has(key) ? cursor.get(key) : saved;
   return Math.min(Math.max(0, current), habits.length - 1);
 }
 
 function showHabit(session, index) {
-  cursor.set(cursorKey(session.id, session.mode), index);
+  cursor.set(cursorKey(session.id, session.mode, session.mixFocus), index);
+  const part = mixRun(session);
+  if (part) {
+    commit(setMixAt(state, part, index + 1), "", "habit-title");
+    return;
+  }
   focusAfter = "habit-title";
   render();
+}
+
+function startMix(part) {
+  mixCard = part;
+  let next = setMixFocus(state, part);
+  const session = activeSession(next);
+  const key = session ? cursorKey(session.id, "mix", part) : "";
+  const reached = session ? stepsReached(session, part) : 0;
+  if (session && !cursor.has(key)) cursor.set(key, reached > 0 ? Math.min(reached, mixChecklist().length) - 1 : 0);
+  if (reached < 1) next = setMixAt(next, part, 1);
+  commit(next, "", "habit-title");
+}
+
+function leaveMix() {
+  commit(setMixFocus(state, ""), "", "habit-title");
+}
+
+function finishMix(session) {
+  const part = mixRun(session);
+  if (!part) return;
+  const total = mixChecklist().length;
+  commit(setMixFocus(setMixDone(setMixAt(state, part, total), part, true), ""), "", "habit-title");
+}
+
+function nextModeId(mode) {
+  const index = MODE_ORDER.indexOf(mode);
+  if (index < 0 || index >= MODE_ORDER.length - 1) return "";
+  return MODE_ORDER[index + 1];
+}
+
+function moveOn(session) {
+  const mode = nextModeId(session.mode);
+  if (!mode) return;
+  let next = state;
+  if (session.mode === "create") {
+    const field = document.getElementById("genre-name");
+    const genre = cleanName(field ? field.value : activeStack(state)?.genre || "", 40);
+    if (!genre) {
+      flash = "Pick a genre first.";
+      focusAfter = "genre-name";
+      render();
+      return;
+    }
+    next = setGenre(next, genre);
+  }
+  next = setMode(next, mode);
+  const dest = activeSession(next);
+  if (dest) cursor.set(cursorKey(dest.id, mode, ""), 0);
+  commit(next, "", "habit-title");
 }
 
 function landOnRecord(next) {
   if (!next.activeStackId) return next;
   if (!activeSession(next)) next = createSession(next, "Untitled session");
   const session = activeSession(next);
-  if (session) cursor.delete(cursorKey(session.id, "record"));
+  if (session) cursor.delete(cursorKey(session.id, "record", ""));
   if (!session) return setView(next, "board");
   return setView(setMode(next, "record"), "board");
 }
@@ -132,7 +214,9 @@ function pickMode(mode) {
   }
   let next = state;
   if (!activeSession(next)) next = createSession(next, "Untitled session");
-  commit(setView(setMode(next, mode), "board"), "", "habit-title");
+  next = setMode(next, mode);
+  if (mode === "mix") next = setMixFocus(next, "");
+  commit(setView(next, "board"), "", "habit-title");
 }
 
 function pickHost(name) {
@@ -562,6 +646,20 @@ function scaleBody(habit, stack) {
   ]);
 }
 
+function arrangementBody(habit, stack) {
+  const guide = guideForGenre(stack.genre);
+  return h("div", {}, [
+    lineList(habit),
+    guide
+      ? h("div", {}, [
+          h("h3", { text: `${guide.label} form` }),
+          levelList(guide.form),
+          h("p", { class: "hint", text: "A common shape for this type. Repeat the hook and change the energy around it." }),
+        ])
+      : h("p", { class: "hint", text: "Pick a genre on the previous screen to see a form for that type." }),
+  ]);
+}
+
 function genreBody(habit, stack) {
   return h("div", {}, [
     h("label", { class: "field" }, [
@@ -572,9 +670,22 @@ function genreBody(habit, stack) {
         maxlength: "40",
         autocomplete: "off",
         value: stack.genre || "",
-        oninput: (event) => remember(setGenre(state, event.target.value)),
+        oninput: (event) => {
+          remember(setGenre(state, event.target.value));
+          const next = document.getElementById("habit-next");
+          if (next) next.disabled = !cleanName(event.target.value, 40);
+        },
       }),
     ]),
+    h(
+      "div",
+      { class: "paths", role: "group", "aria-label": "Genre type" },
+      GENRE_GUIDES.map((guide) =>
+        choiceButton(`genre-${guide.id}`, guide.label, guideForGenre(stack.genre)?.id === guide.id, "path-btn", () =>
+          commit(setGenre(state, guide.label), "", "genre-name"),
+        ),
+      ),
+    ),
     h(
       "ul",
       { class: "habit-lines" },
@@ -583,16 +694,159 @@ function genreBody(habit, stack) {
   ]);
 }
 
-function mixChoice(session) {
+function levelList(lines) {
   return h(
-    "div",
-    { class: "paths", role: "group", "aria-label": "Vocal, beat, or both" },
-    MIX_FOCUS.map((path) =>
-      choiceButton(`mix-${path.id}`, path.label, session.mixFocus === path.id, "path-btn", () =>
-        commit(setMixFocus(state, path.id), "", `mix-${path.id}`),
-      ),
-    ),
+    "ul",
+    { class: "habit-lines" },
+    lines.map((line) => h("li", { text: line })),
   );
+}
+
+function pathPanel(title, path) {
+  return h("article", { class: "deck-panel" }, [
+    h("p", { class: "deck-name", text: title }),
+    h("p", { text: path.note }),
+    h("p", { text: path.detail }),
+    h("h3", { text: "Use" }),
+    levelList(path.use),
+    h("h3", { text: "Leave off" }),
+    levelList(path.skip),
+  ]);
+}
+
+function mixDeck(guide) {
+  const vocal = mixCard === "vocal";
+  return h("div", { class: "deck", id: "mix-deck" }, [
+    h("div", { class: "deck-tabs", role: "tablist", "aria-label": "Beat or vocal card" }, [
+      h(
+        "button",
+        {
+          type: "button",
+          class: "deck-tab",
+          id: "deck-beat",
+          role: "tab",
+          "aria-selected": vocal ? "false" : "true",
+          onclick: () => {
+            mixCard = "beat";
+            focusAfter = "deck-beat";
+            render();
+          },
+        },
+        ["Beat"],
+      ),
+      h(
+        "button",
+        {
+          type: "button",
+          class: "deck-tab",
+          id: "deck-vocal",
+          role: "tab",
+          "aria-selected": vocal ? "true" : "false",
+          onclick: () => {
+            mixCard = "vocal";
+            focusAfter = "deck-vocal";
+            render();
+          },
+        },
+        ["Vocal"],
+      ),
+    ]),
+    h("p", { class: "deck-kicker", text: `${vocal ? "Vocal" : "Beat"} · ${guide.label}` }),
+    h("div", { class: "deck-viewport", id: "deck-viewport" }, [
+      h("div", { class: "deck-track", style: `transform:translateX(-${vocal ? 100 : 0}%)` }, [
+        pathPanel("Beat", guide.beat),
+        pathPanel("Vocal", guide.vocalPath),
+      ]),
+    ]),
+    h("p", { class: "hint", text: "Swipe sideways for the other card. Beat is the music. Vocal is the voice." }),
+  ]);
+}
+
+function rangeCard(stack, mode) {
+  const matched = guideForGenre(stack.genre);
+  const shared =
+    mode === "record"
+      ? SHARED_LEVELS.record
+      : mode === "master"
+        ? SHARED_LEVELS.master
+        : mode === "mix"
+          ? SHARED_LEVELS.mix
+          : SHARED_LEVELS.mix;
+  const title = mode === "record" ? "Record levels" : mode === "master" ? "Master levels" : "Mix levels";
+  return h("div", { class: "range", id: "level-card" }, [
+    h("h3", { text: title }),
+    levelList(shared),
+    h("p", { class: "hint", text: SHARED_LEVELS.note }),
+    mode === "record"
+      ? h("p", { class: "hint", text: "EQ, compression, saturation, delay, and reverb wait until Mix. The limiter waits until Master." })
+      : null,
+    mode === "mix"
+      ? matched
+        ? mixDeck(matched)
+        : h("p", { class: "hint", text: "Pick a genre on Create to open the Beat and Vocal cards." })
+      : null,
+    mode === "master"
+      ? h("p", {
+          class: "source",
+          text: "Spotify loudness and true-peak lines are from Spotify for Artists, Loudness normalization. Record peaks and mix-bus headroom are this guide's practice levels.",
+        })
+      : null,
+  ]);
+}
+
+function progressBar(done, total, label) {
+  const value = total ? Math.round((done / total) * 100) : 0;
+  return h("div", { class: "meter" }, [
+    h("p", { class: "progress", id: "section-progress", text: label }),
+    h(
+      "div",
+      {
+        class: "meter-track",
+        role: "progressbar",
+        "aria-valuemin": "0",
+        "aria-valuemax": String(total),
+        "aria-valuenow": String(done),
+        "aria-label": label,
+      },
+      [h("div", { class: "meter-fill", style: `width:${value}%` })],
+    ),
+  ]);
+}
+
+function mixHub(session) {
+  const done = session.mixDone || { beat: false, vocal: false };
+  const total = mixChecklist().length;
+  const beatReached = stepsReached(session, "beat");
+  const vocalReached = stepsReached(session, "vocal");
+  const beat = MIX_FOCUS.find((item) => item.id === "beat");
+  const vocal = MIX_FOCUS.find((item) => item.id === "vocal");
+  return h("div", { class: "habit", "data-habit": "mix-hub" }, [
+    progressBar(beatReached, total, `Beat (${beatReached}/${total} steps completed)`),
+    progressBar(vocalReached, total, `Vocal (${vocalReached}/${total} steps completed)`),
+    h("h2", { id: "habit-title", tabindex: "-1", text: "Beat and vocal" }),
+    h("p", { class: "hint", text: "Finish the checks you need. A beat can move on without a vocal. A vocal can move on without redoing the beat." }),
+    h("div", { class: "paths" }, [
+      h(
+        "button",
+        { type: "button", class: "btn", id: "mix-beat", onclick: () => startMix("beat") },
+        [done.beat ? "Beat checks, done" : "Beat checks"],
+      ),
+      h(
+        "button",
+        { type: "button", class: "btn", id: "mix-vocal", onclick: () => startMix("vocal") },
+        [done.vocal ? "Vocal checks, done" : "Vocal checks"],
+      ),
+    ]),
+    h("p", { class: "do-this", text: beat.text }),
+    h("p", { class: "do-this", text: vocal.text }),
+    h("div", { class: "pager" }, [
+      h(
+        "button",
+        { type: "button", class: "btn", id: "habit-next", onclick: () => moveOn(session) },
+        ["Move On"],
+      ),
+    ]),
+  ]);
 }
 
 function lineList(habit) {
@@ -614,33 +868,60 @@ function mixGain(habit, session) {
 function habitBody(habit, stack, session) {
   if (habit.kind === "scale") return scaleBody(habit, stack);
   if (habit.kind === "genre") return genreBody(habit, stack);
-  if (habit.kind === "mix-choice") return mixChoice(session);
+  if (habit.kind === "arrangement") return arrangementBody(habit, stack);
   if (habit.kind === "mix-gain") return mixGain(habit, session);
+  if (habit.kind === "master-limit") return masterLimit(habit, stack);
   return lineList(habit);
+}
+
+function masterLimit(habit, stack) {
+  const guide = guideForGenre(stack.genre);
+  return h("div", {}, [
+    lineList(habit),
+    guide?.masterNote
+      ? h("div", {}, [
+          h("h3", { text: `${guide.label} master` }),
+          h("p", { text: guide.masterNote }),
+        ])
+      : h("p", { class: "hint", text: "Pick a genre on Create for a note on how hard to limit this type of record." }),
+  ]);
 }
 
 function renderHabits(stack, session) {
   const mode = modeById(session.mode);
-  const habits = habitsFor(mode.id);
+  if (session.mode === "mix" && !mixRun(session)) return mixHub(session);
+  const habits = (session.mode === "mix" ? habitsFor("mix").filter((habit) => habit.kind !== "mix-choice") : habitsFor(mode.id));
   const index = habitIndex(session, habits);
   const habit = habits[index];
   if (!habit) {
     return h("div", { class: "habit" }, [h("h2", { id: "habit-title", tabindex: "-1", text: mode.label })]);
   }
-  const needsChoice = habit.kind === "mix-choice" && !session.mixFocus;
+  const running = Boolean(mixRun(session));
+  const atEnd = index >= habits.length - 1;
+  const upcoming = nextModeId(session.mode);
+  const genreMissing = session.mode === "create" && habit.kind === "genre" && !cleanName(stack.genre || "", 40);
+  const genreBlocksLeave = atEnd && session.mode === "create" && !cleanName(stack.genre || "", 40);
+  const nextLabel = running && atEnd ? "Done" : atEnd && upcoming ? "Move On" : "Next";
   return h("div", { class: "habit", "data-habit": habit.id }, [
-    h("p", { class: "progress", text: `${index + 1} of ${habits.length}` }),
+    progressBar(index + 1, habits.length, `${index + 1} of ${habits.length}`),
     h("h2", { id: "habit-title", tabindex: "-1", text: habit.title }),
     habitBody(habit, stack, session),
     h("div", { class: "pager" }, [
+      running
+        ? h(
+            "button",
+            { type: "button", class: "btn ghost", id: "mix-home", onclick: () => leaveMix() },
+            ["Mix home"],
+          )
+        : null,
       h(
         "button",
         {
           type: "button",
           class: "btn ghost",
           id: "habit-back",
-          disabled: index === 0,
-          onclick: () => showHabit(session, index - 1),
+          disabled: index === 0 && !running,
+          onclick: () => (index === 0 && running ? leaveMix() : showHabit(session, index - 1)),
         },
         ["Back"],
       ),
@@ -650,10 +931,10 @@ function renderHabits(stack, session) {
           type: "button",
           class: "btn",
           id: "habit-next",
-          disabled: index >= habits.length - 1 || needsChoice,
-          onclick: () => showHabit(session, index + 1),
+          disabled: genreMissing || genreBlocksLeave || (atEnd && !upcoming && !running),
+          onclick: () => (running && atEnd ? finishMix(session) : atEnd ? moveOn(session) : showHabit(session, index + 1)),
         },
-        ["Next"],
+        [nextLabel],
       ),
     ]),
   ]);
@@ -700,6 +981,7 @@ function renderGuide() {
     h("p", { class: "context", text: stack.name }),
     modeSwitcher(session),
     renderHabits(stack, session),
+    session.mode === "create" ? null : rangeCard(stack, session.mode),
   ]);
 }
 
@@ -986,10 +1268,34 @@ function renderShell() {
   ]);
 }
 
+function bindDeck() {
+  const view = document.getElementById("deck-viewport");
+  if (!view) return;
+  let startX = 0;
+  let startY = 0;
+  let active = false;
+  view.addEventListener("pointerdown", (event) => {
+    active = true;
+    startX = event.clientX;
+    startY = event.clientY;
+  });
+  view.addEventListener("pointerup", (event) => {
+    if (!active) return;
+    active = false;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
+    mixCard = dx < 0 ? "vocal" : "beat";
+    focusAfter = mixCard === "vocal" ? "deck-vocal" : "deck-beat";
+    render();
+  });
+}
+
 function render() {
   armed.clear();
   document.getElementById("app").replaceChildren(renderShell());
   flash = "";
+  bindDeck();
   if (focusAfter) {
     document.getElementById(focusAfter)?.focus();
     focusAfter = "";

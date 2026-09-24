@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { HABITS, KEYBOARD, KEYS, MIX_FOCUS, MODES, SCALES, habitsFor, keyboardLayout, scaleNotes } from "../src/seed.js";
+import { GENRE_GUIDES, HABITS, KEYBOARD, KEYS, MIX_FOCUS, MODES, SCALES, SHARED_LEVELS, guideForGenre, habitsFor, keyboardLayout, scaleNotes } from "../src/seed.js";
 import {
   LEGACY_KEY,
   STORAGE_KEY,
@@ -21,6 +21,8 @@ import {
   setActiveStack,
   setGenre,
   setKeyScale,
+  setMixAt,
+  setMixDone,
   setMixFocus,
   setMode,
   tone,
@@ -134,11 +136,11 @@ test("shared habits and scale notes stay generic", () => {
   assert.equal(MODES.some((mode) => mode.label === "Ideas"), false);
   assert.deepEqual(
     habitsFor("record").map((habit) => habit.title),
-    ["Mic", "Level", "Dry"],
+    ["Session", "Mic", "Level", "Dry"],
   );
   assert.deepEqual(
     habitsFor("create").map((habit) => habit.title),
-    ["Key and scale", "Arrangement", "Genre"],
+    ["Key and scale", "Genre", "Arrangement"],
   );
   assert.deepEqual(
     habitsFor("mix").map((habit) => habit.title),
@@ -146,10 +148,10 @@ test("shared habits and scale notes stay generic", () => {
   );
   assert.deepEqual(
     habitsFor("master").map((habit) => habit.title),
-    ["Finish the mix", "Limiter", "If it pumps or lisps"],
+    ["Print the mix", "Reference", "Corrective EQ", "Glue", "Tone and mono", "Limiter", "Listen back", "Release"],
   );
   assert.equal(new Set(HABITS.map((habit) => habit.id)).size, HABITS.length);
-  assert.match(habitsFor("record")[0].lines.join(" "), /few inches off the mic, slightly off-axis/);
+  assert.match(habitsFor("record").find((habit) => habit.id === "rec-mic").lines.join(" "), /few inches off the mic, slightly off-axis/);
   assert.equal(
     habitsFor("record").find((habit) => habit.id === "rec-dry").lines.join(" "),
     "Record dry. Headphone reverb is not printed. Mix plugins are not printed.",
@@ -158,12 +160,14 @@ test("shared habits and scale notes stay generic", () => {
     habitsFor("create").find((habit) => habit.id === "cre-form").lines.join(" "),
     /Intro, verse, chorus, and out/,
   );
+  assert.match(habitsFor("record").find((habit) => habit.id === "rec-session").lines.join(" "), /24-bit/);
   assert.match(habitsFor("record").find((habit) => habit.id === "rec-level").lines.join(" "), /-12 to -6 dBFS/);
   assert.match(habitsFor("record").find((habit) => habit.id === "rec-level").lines.join(" "), /-18 dBFS/);
   assert.match(habitsFor("mix").find((habit) => habit.id === "mix-head").lines.join(" "), /around -6 dBFS/);
   assert.match(habitsFor("mix").find((habit) => habit.id === "mix-fx").lines.join(" "), /One shared delay and one shared reverb/);
   assert.match(habitsFor("master").find((habit) => habit.id === "mas-limit").lines.join(" "), /-14 LUFS/);
-  assert.match(habitsFor("master").at(-1).lines.join(" "), /turn the limiter down/);
+  assert.match(habitsFor("master").find((habit) => habit.id === "mas-listen").lines.join(" "), /turn the limiter down/);
+  assert.match(habitsFor("master").find((habit) => habit.id === "mas-release").lines.join(" "), /24-bit/);
   assert.match(MIX_FOCUS.find((item) => item.id === "both").text, /shared delay and reverb/);
   assert.match(MIX_FOCUS.find((item) => item.id === "vocal").text, /Do not stack vocal suites/);
   assert.match(MIX_FOCUS.find((item) => item.id === "beat").text, /drums and bass first/);
@@ -174,6 +178,28 @@ test("shared habits and scale notes stay generic", () => {
   assert.deepEqual(scaleNotes("A", "minor-pentatonic"), ["A", "C", "D", "E", "G"]);
   assert.deepEqual(scaleNotes("D#", "major-pentatonic"), ["D#", "F", "G", "A#", "C"]);
   assert.deepEqual(scaleNotes("F#", "natural-minor"), ["F#", "G#", "A", "B", "C#", "D", "E"]);
+  assert.equal(guideForGenre("Trap beat")?.id, "rap");
+  assert.equal(guideForGenre("r&b")?.id, "rnb");
+  assert.equal(guideForGenre("indie rock")?.id, "rock");
+  assert.equal(guideForGenre(""), null);
+  assert.match(SHARED_LEVELS.master.join(" "), /-14 LUFS/);
+  assert.match(SHARED_LEVELS.master.join(" "), /-2 dBTP/);
+  const guideBlob = JSON.stringify(GENRE_GUIDES);
+  for (const word of HABIT_BANNED) assert.equal(guideBlob.includes(word), false, word);
+  for (const guide of GENRE_GUIDES) {
+    assert.ok(guide.beat.use.length >= 3, guide.id);
+    assert.ok(guide.beat.skip.length >= 2, guide.id);
+    assert.ok(guide.vocalPath.use.length >= 3, guide.id);
+    assert.ok(guide.vocalPath.skip.length >= 2, guide.id);
+    assert.ok(guide.masterNote.length > 40, guide.id);
+    assert.ok(guide.beat.detail.length > 40, guide.id);
+    assert.ok(guide.vocalPath.detail.length > 40, guide.id);
+    assert.ok(guide.form.length >= 3, guide.id);
+    const names = JSON.stringify(guide);
+    assert.equal(/ozone|waves|fabfilter|nectar/i.test(names), false, guide.id);
+  }
+  assert.match(GENRE_GUIDES.find((item) => item.id === "rap").form.join(" "), /16 bars/);
+  assert.match(GENRE_GUIDES.find((item) => item.id === "electronic").form.join(" "), /drop/);
   for (const key of KEYS) {
     for (const scale of SCALES) {
       const notes = scaleNotes(key, scale.id);
@@ -227,8 +253,12 @@ test("the piano starts on C for two octaves and marks the scale", () => {
 test("key, scale, and mix focus survive a reload", () => {
   let state = setKeyScale(setGenre(seedState(), "ballad"), "F#", "natural-minor");
   state = setMixFocus(state, "beat");
+  state = setMixAt(state, "vocal", 2);
+  state = setMixAt(state, "vocal", 1);
+  state = setMixDone(state, "beat", true);
   state = setMode(state, "record");
   assert.equal(activeSession(state).mixFocus, "beat");
+  assert.equal(activeSession(state).mixDone.beat, true);
   assert.equal(activeStack(state).plugins.length, 30);
   const store = memory();
   store.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -239,6 +269,9 @@ test("key, scale, and mix focus survive a reload", () => {
   assert.equal(home.genre, "ballad");
   assert.deepEqual(scaleNotes(home.key, home.scale), ["F#", "G#", "A", "B", "C#", "D", "E"]);
   assert.equal(activeSession(loaded).mixFocus, "beat");
+  assert.equal(activeSession(loaded).mixDone.beat, true);
+  assert.equal(activeSession(loaded).mixAt.vocal, 2);
+  assert.equal(activeSession(state).mixAt.vocal, 2);
   assert.equal(home.plugins.length, 30);
   loaded.sessions[0].mixFocus = "nope";
   loaded.stacks[0].key = "H";
@@ -342,8 +375,8 @@ test("ships Home, Home 2, and Mobile without Logic plugins on mobile", () => {
   for (const word of ["Logic Pro", "UA Volt", "Slate", "VSX", "Ozone", "Nectar", "Waves", "VMS"]) {
     assert.equal(blob.includes(word), false, word);
   }
-  assert.equal(habitsFor("record")[0].title, "Mic");
-  assert.equal(habitsFor("record").length, 3);
+  assert.equal(habitsFor("record")[0].title, "Session");
+  assert.equal(habitsFor("record").length, 4);
 });
 
 test("key and plugins stay on the setup that owns them", () => {
@@ -484,8 +517,8 @@ test("a new setup stores inventory and does not change the habit text", () => {
   assert.equal(stack.scale, "major");
   const habits = JSON.stringify(HABITS);
   assert.equal(habits.includes("Room Tone"), false);
-  assert.equal(habitsFor("record")[0].lines.join(" ").includes("Room Tone"), false);
-  assert.equal(habitsFor("record")[0].title, "Mic");
+  assert.equal(habitsFor("record").some((habit) => habit.lines.join(" ").includes("Room Tone")), false);
+  assert.equal(habitsFor("record")[0].title, "Session");
   const home = state.stacks.find((item) => item.id === "stk-mkz-logic-home");
   assert.equal(home.plugins.length, 30);
   const mobile = state.stacks.find((item) => item.name === "Mobile (Bandlab)");

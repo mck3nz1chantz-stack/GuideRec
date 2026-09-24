@@ -7,6 +7,7 @@ export function h(tag, props, kids) {
     else if (key === "text") node.textContent = String(val);
     else if (key === "checked" || key === "selected" || key === "disabled") node[key] = Boolean(val);
     else if (key === "value") node.value = String(val);
+    else if (key === "style") node.setAttribute("style", String(val));
     else if (key === "htmlFor") node.htmlFor = String(val);
     else if (key.startsWith("on") && typeof val === "function") {
       node.addEventListener(key.slice(2).toLowerCase(), val);

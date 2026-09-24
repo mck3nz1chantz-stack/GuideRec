@@ -412,6 +412,107 @@ textarea:focus-visible {
   .add-line .btn { width: auto; }
 }
 
+.meter { margin: 0 0 0.85rem; }
+
+.meter-track {
+  height: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #2a241e;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: var(--create);
+}
+
+.guide[data-mode="record"] .meter-fill { background: var(--rec); }
+.guide[data-mode="mix"] .meter-fill { background: var(--mix); }
+.guide[data-mode="master"] .meter-fill { background: var(--master); }
+
+.range {
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.range h3 { margin-top: 0.75rem; }
+
+.deck-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.deck-tab {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #2a241e;
+  color: var(--ink);
+}
+
+.deck-tab[aria-selected="true"] {
+  background: var(--mix);
+  color: #1a120c;
+  font-weight: 700;
+}
+
+.deck-kicker {
+  margin: 0.7rem 0 0.35rem;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 1.45rem;
+}
+
+.deck-viewport {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.deck-track {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+.deck-panel {
+  flex: 0 0 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.2rem 0.15rem 0.4rem;
+}
+
+.deck-name {
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mix);
+  font-weight: 700;
+}
+
+.genre-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.35rem 0.75rem 0.55rem;
+  margin: 0.45rem 0;
+  background: var(--panel);
+}
+
+.genre-card summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.genre-card p { margin: 0.35rem 0; }
+
+.type-list { margin: 0.25rem 0 0.4rem; padding-left: 1.2rem; }
+
+.source { color: var(--muted); font-size: 0.92rem; }
+
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto; }
+  .deck-track { transition: none; }
 }
