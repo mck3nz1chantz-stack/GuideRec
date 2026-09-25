@@ -58,6 +58,7 @@ let flash = "";
 let storageError = false;
 let focusAfter = "";
 let mixCard = "beat";
+let keyboardOpen = false;
 let hostName = "Logic Pro";
 let hostDraft = "";
 let gate = "";
@@ -572,7 +573,19 @@ function pct(value) {
   return `${(value * 100).toFixed(4)}%`;
 }
 
-function renderKeyboard(stack, notes) {
+function openKeyboard() {
+  keyboardOpen = true;
+  focusAfter = "piano-close";
+  render();
+}
+
+function closeKeyboard() {
+  keyboardOpen = false;
+  focusAfter = "piano-expand";
+  render();
+}
+
+function renderKeyboard(stack, notes, expanded) {
   const layout = keyboardLayout(stack.key, stack.scale);
   if (!layout) return null;
   const scale = SCALES.find((item) => item.id === stack.scale);
@@ -596,11 +609,18 @@ function renderKeyboard(stack, notes) {
   return h(
     "div",
     {
-      class: "piano",
+      class: expanded ? "piano piano-full" : "piano",
       role: "img",
       "aria-label": label,
     },
     [
+      expanded
+        ? null
+        : h(
+            "button",
+            { type: "button", class: "btn piano-open", id: "piano-expand", onclick: () => openKeyboard() },
+            ["Full keyboard"],
+          ),
       h(
         "div",
         {
@@ -641,9 +661,41 @@ function scaleBody(habit, stack) {
       (event) => commit(setKeyScale(state, activeStack(state)?.key || stack.key, event.target.value), "", "scale-name"),
     ),
     renderKeyboard(stack, notes),
+    keyboardOpen ? keyboardDialog(stack, notes) : null,
     h("p", { id: "scale-notes", class: "notes", "aria-live": "polite", text: notes.join(" ") }),
     h("p", { class: "hint", text: (habit.lines || []).join(" ") }),
   ]);
+}
+
+function keyboardDialog(stack, notes) {
+  const scale = SCALES.find((item) => item.id === stack.scale);
+  return h(
+    "div",
+    {
+      class: "piano-expand",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-labelledby": "piano-expand-title",
+    },
+    [
+      h("div", { class: "piano-expand-bar" }, [
+        h("h2", { id: "piano-expand-title", text: `${stack.key} ${scale?.label || ""}` }),
+        h(
+          "button",
+          {
+            type: "button",
+            class: "btn",
+            id: "piano-close",
+            onclick: () => closeKeyboard(),
+          },
+          ["Close"],
+        ),
+      ]),
+      h("p", { class: "hint", text: "Turn the phone sideways. The keys fill the screen and keep their note names." }),
+      h("p", { id: "scale-notes-full", class: "notes", text: notes.join(" ") }),
+      renderKeyboard(stack, notes, true),
+    ],
+  );
 }
 
 function arrangementBody(habit, stack) {
@@ -1293,9 +1345,13 @@ function bindDeck() {
 
 function render() {
   armed.clear();
+  document.body.classList.toggle("keyboard-open", keyboardOpen);
   document.getElementById("app").replaceChildren(renderShell());
   flash = "";
   bindDeck();
+  document.getElementById("piano-close")?.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeKeyboard();
+  });
   if (focusAfter) {
     document.getElementById(focusAfter)?.focus();
     focusAfter = "";

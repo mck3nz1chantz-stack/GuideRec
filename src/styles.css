@@ -26,7 +26,12 @@ body {
   padding: 0.75rem max(0.75rem, env(safe-area-inset-right)) 0 max(0.75rem, env(safe-area-inset-left));
 }
 
-button, input, select, textarea { font: inherit; color: inherit; max-width: 100%; }
+button, input, select, textarea, summary, .tab, .mode-btn, .path-btn {
+  font: inherit;
+  color: inherit;
+  max-width: 100%;
+  touch-action: manipulation;
+}
 
 .shell, .main, .setup-card, .card, .habit, .gear-row { min-width: 0; max-width: 100%; }
 
@@ -245,9 +250,52 @@ input, select, textarea {
 }
 
 .piano {
+  position: relative;
   width: 100%;
   margin: 0.35rem 0 0.7rem;
   min-width: 0;
+}
+
+.piano-open {
+  position: absolute;
+  z-index: 2;
+  top: 0.45rem;
+  right: 0.45rem;
+  min-height: 44px;
+}
+
+body.keyboard-open { overflow: hidden; }
+
+.piano-expand {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: var(--bg);
+  padding:
+    max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+}
+
+.piano-expand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.piano-expand-bar h2 { margin: 0; }
+
+.piano-expand .piano { flex: 1; min-height: 0; margin: 0; }
+
+.piano-expand .piano-window {
+  height: 100%;
+  aspect-ratio: auto;
+  overflow: auto;
 }
 
 .piano-window {
@@ -404,7 +452,15 @@ textarea:focus-visible {
     width: calc(11.25rem * 1200 / 280);
   }
 
-  .piano-name { display: none; }
+  .piano-name { display: block; font-size: 0.68rem; }
+  .piano-key.black .piano-name { font-size: 0.52rem; }
+}
+
+@media (orientation: landscape) {
+  .piano-expand .piano-window { overflow: hidden; }
+  .piano-expand .piano-track { width: 100%; height: 100%; }
+  .piano-expand .piano-name { font-size: clamp(0.7rem, 1.5vw, 1rem); }
+  .piano-expand .piano-key.black .piano-name { font-size: clamp(0.55rem, 1.1vw, 0.8rem); }
 }
 
 @media (min-width: 800px) {
